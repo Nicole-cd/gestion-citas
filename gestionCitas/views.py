@@ -35,7 +35,7 @@ def login_view(request):
             (Freelancer, "freelancer", "correo"),
             (Administrador, "administrador", "correo"),
         ]:
-            usuario = modelo.objects.filter(**{campo_correo: correo}).first()
+            usuario = modelo.objects.filter(**{"campo_correo": correo}).first()
             if usuario and check_password(password, usuario.contrasena):
                 request.session["rol"] = rol
                 request.session["user_id"] = usuario.pk
