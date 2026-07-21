@@ -1,0 +1,61 @@
+<div class="mb-4">
+        <span class="navbar-brand text-white d-block">Agenda</span>
+        <small class="text-warning text-uppercase" style="letter-spacing:.1em;font-size:.7rem;">Citas para
+                freelancers</small>
+</div>
+
+{% if request.session.rol == 'cliente' %}
+<small class="text-secondary text-uppercase d-block mb-2" style="font-size:.68rem;letter-spacing:.1em;">Cliente</small>
+<ul class="nav nav-pills flex-column mb-4">
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'cliente_dashboard' %}active{% endif %}"
+                        href="{% url 'cliente_dashboard' %}"><i class="bi bi-house me-2"></i>Panel</a></li>
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'reservar_cita' %}active{% endif %}"
+                        href="{% url 'reservar_cita' %}"><i class="bi bi-plus-circle me-2"></i>Reservar cita</a></li>
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'mis_citas' %}active{% endif %}"
+                        href="{% url 'mis_citas' %}"><i class="bi bi-list-check me-2"></i>Mis citas</a></li>
+</ul>
+{% endif %}
+
+{% if request.session.rol == 'freelancer' %}
+<small class="text-secondary text-uppercase d-block mb-2"
+        style="font-size:.68rem;letter-spacing:.1em;">Freelancer</small>
+<ul class="nav nav-pills flex-column mb-4">
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'freelancer_dashboard' %}active{% endif %}"
+                        href="{% url 'freelancer_dashboard' %}"><i class="bi bi-house me-2"></i>Mi agenda</a></li>
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'registrar_servicio' %}active{% endif %}"
+                        href="{% url 'registrar_servicio' %}"><i class="bi bi-plus-circle me-2"></i>Mis servicios</a>
+        </li>
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'disponibilidad' %}active{% endif %}"
+                        href="{% url 'disponibilidad' %}"><i class="bi bi-clock me-2"></i>Disponibilidad</a></li>
+</ul>
+{% endif %}
+
+{% if request.session.rol == 'administrador' %}
+<small class="text-secondary text-uppercase d-block mb-2"
+        style="font-size:.68rem;letter-spacing:.1em;">Administración</small>
+<ul class="nav nav-pills flex-column mb-4">
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                        href="{% url 'admin_dashboard' %}"><i class="bi bi-house me-2"></i>Panel general</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'reportes' %}active{% endif %}"
+                        href="{% url 'reportes' %}"><i class="bi bi-bar-chart me-2"></i>Reportes</a></li>
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'historial_cambios' %}active{% endif %}"
+                        href="{% url 'historial_cambios' %}"><i class="bi bi-arrow-repeat me-2"></i>Historial de
+                        cambios</a></li>
+        <li class="nav-item"><a
+                        class="nav-link {% if request.resolver_match.url_name == 'listado_freelancers' %}active{% endif %}"
+                        href="{% url 'listado_freelancers' %}"><i class="bi bi-people me-2"></i>Freelancers</a></li>
+</ul>
+{% endif %}
+
+<div class="mt-auto pt-3 border-top border-secondary small text-secondary">
+        {{ request.session.nombre|default:"Usuario" }}<br>
+        <a href="{% url 'logout' %}" class="text-white">Cerrar sesión →</a>
+</div>
