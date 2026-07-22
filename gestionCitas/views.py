@@ -23,7 +23,6 @@ def login_view(request):
         correo = request.POST.get('correo', '').strip()
         password = request.POST.get('password', '')
 
-        # Buscar en Cliente
         cliente = Cliente.objects.filter(correo_cliente=correo).first()
         if cliente and check_password(password, cliente.contrasena):
             request.session['rol'] = 'cliente'
@@ -31,7 +30,6 @@ def login_view(request):
             request.session['nombre'] = cliente.nombre
             return redirect('cliente_dashboard')
 
-        # Buscar en Freelancer
         freelancer = Freelancer.objects.filter(correo=correo).first()
         if freelancer and check_password(password, freelancer.contrasena):
             request.session['rol'] = 'freelancer'
@@ -39,7 +37,6 @@ def login_view(request):
             request.session['nombre'] = freelancer.nombre
             return redirect('freelancer_dashboard')
 
-        # Buscar en Administrador
         admin = Administrador.objects.filter(correo=correo).first()
         if admin and check_password(password, admin.contrasena):
             request.session['rol'] = 'administrador'
@@ -101,7 +98,7 @@ def registro_view(request):
 
     return render(request, 'citas/registro.html')
 
-# VISTAS DE CLIENTE
+
 @requiere_rol('cliente')
 def cliente_dashboard(request):
     freelancers = Freelancer.objects.filter(activo=True).annotate(
@@ -134,7 +131,7 @@ def reservar_cita(request):
 
         servicio = get_object_or_404(Servicio, pk=servicio_id)
 
-        # Verificar conflicto
+
         conflicto = Reserva.objects.filter(
             id_freelancer_id=freelancer_id,
             fecha=fecha,
@@ -186,7 +183,7 @@ def cancelar_cita(request, pk):
 
     return render(request, 'citas/cliente/cancelar_cita.html', {'cita': cita})
 
-# VISTAS DE FREELANCER
+
 @requiere_rol('freelancer')
 def freelancer_dashboard(request):
     hoy = date.today()
@@ -279,7 +276,7 @@ def disponibilidad_view(request):
         'ausencias': ausencias,
     })
 
-# VISTAS DE ADMINISTRADOR
+
 @requiere_rol('administrador')
 def admin_dashboard(request):
     total_clientes = Cliente.objects.count()
@@ -296,44 +293,5 @@ def admin_dashboard(request):
         'citas_pendientes': citas_pendientes,
     })
 
-@requiere_rol('administrador')
-def reportes_view(request):
-    tipo = request.GET.get('tipo', 'citas')
-    desde = request.GET.get('desde')
-    hasta = request.GET.get('hasta')
 
-    reservas = Reserva.objects.select_related('id_cliente', 'id_freelancer', 'id_servicio')
 
-    if desde:
-        reservas = reservas.filter(fecha__gte=desde)
-    if hasta:
-        reservas = reservas.filter(fecha__lte=hasta)
-
-    total_citas = reservas.count()
-    total_ingresos = reservas.filter(estado='atendida').aggregate(
-        total=Sum('id_servicio__precio_base')
-    )['total'] or 0
-
-    return render(request, 'citas/admin/reportes.html', {
-        'tipo': tipo,
-        'desde': desde,
-        'hasta': hasta,
-        'reservas': reservas,
-        'total_citas': total_citas,
-        'total_ingresos': total_ingresos,
-    })
-
-@requiere_rol('administrador')
-def historial_cambios_view(request):
-    historial = HistorialCambio.objects.select_related('administrador').order_by('-fecha_hora')
-    return render(request, 'citas/admin/historial_cambios.html', {'historial': historial})
-
-@requiere_rol('administrador')
-def listado_freelancers_view(request):
-    freelancers = Freelancer.objects.annotate(
-        servicios_count=Count('servicios')
-    )
-    return render(request, 'citas/admin/listado_freelancers.html', {
-        'freelancers': freelancers,
-        'total_freelancers': freelancers.count(),
-    })
