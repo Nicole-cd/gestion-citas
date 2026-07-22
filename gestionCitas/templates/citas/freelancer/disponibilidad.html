@@ -1,0 +1,106 @@
+{% extends "citas/base.html" %}
+{% load static %}
+
+{% block title %}Disponibilidad{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <small class="text-warning text-uppercase fw-semibold"
+        style="letter-spacing:.1em;font-size:.72rem;">Freelancer</small>
+    <h1 class="mb-1">Disponibilidad Semanal</h1>
+    <p class="text-secondary mb-0">Configura tus horarios de atención y días no disponibles.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Horarios de atención</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Activo</th>
+                                    <th>Hora inicio</th>
+                                    <th>Hora fin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dia in 'lunes,martes,miercoles,jueves,vienres,sabado,domingo'|split:',' %}
+                                <tr>
+                                    <td>{{ dia|title }}</td>
+                                    <td>
+                                        <input type="checkbox" name="{{ dia }}_activo" {% if dia in disponibilidades
+                                            %}checked{% endif %}>
+                                    </td>
+                                    <td>
+                                        <input type="time" name="{{ dia }}_inicio"
+                                            value="{{ disponibilidades|get_item:dia|default:'09:00' }}"
+                                            class="form-control form-control-sm" style="width:100px;">
+                                    </td>
+                                    <td>
+                                        <input type="time" name="{{ dia }}_fin"
+                                            value="{{ disponibilidades|get_item:dia|default:'17:00' }}"
+                                            class="form-control form-control-sm" style="width:100px;">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="bi bi-save me-1"></i> Guardar disponibilidad
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Días no disponibles</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" name="fecha_no_disponible" class="form-control" required
+                            min="{% now 'Y-m-d' %}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Motivo</label>
+                        <input type="text" name="motivo_no_disponible" class="form-control"
+                            placeholder="Vacaciones, feriado, etc.">
+                    </div>
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-calendar-x me-1"></i> Agregar día no disponible
+                    </button>
+                </form>
+
+                <hr>
+
+                <h6 class="mb-3">Días bloqueados</h6>
+                {% if ausencias %}
+                <ul class="list-group">
+                    {% for a in ausencias %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ a.fecha|date:"d/m/Y" }}
+                        <span class="badge bg-secondary">{{ a.motivo|default:"Sin motivo" }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-secondary text-center">No hay días bloqueados.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --bs-font-sans-serif: 'Public Sans', system-ui, sans-serif;
+    --bs-font-monospace: 'IBM Plex Mono', ui-monospace, monospace;
+    --bs-body-bg: #F3F1E8;
+    --bs-body-color: #1d2945;
+
+    --bs-primary: #142C2C;
+    --bs-primary-rgb: 20, 44, 44;
+    --bs-secondary: #5B6B67;
+    --bs-secondary-rgb: 91, 107, 103;
+
+    --bs-warning: #E4A64B;
+    --bs-warning-rgb: 228, 166, 75;
+    --bs-success: #3F7D58;
+    --bs-success-rgb: 63, 125, 88;
+    --bs-danger: #C1443B;
+    --bs-danger-rgb: 193, 68, 59;
+
+    --bs-border-color: #D8D3C2;
+    --bs-border-radius: .375rem;
+    --bs-border-radius-lg: .5rem;
+    --bs-card-border-color: var(--bs-border-color);
+    --bs-card-bg: #FDFCF7;
+
+    --bs-link-color: #6B4713;
+    --bs-link-hover-color: #4d3308;
+}
+
+h1, h2, h3, h4, .navbar-brand {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -.01em;
+}
+
+.mono {
+    font-family: var(--bs-font-monospace);
+}
+
+.btn-warning {
+    color: #142C2C;
+    font-weight: 600;
+}
+
+.btn-warning:hover {
+    color: #142C2C;
+}
+
+.bg-dark {
+    background-color: var(--bs-primary) !important;
+}
+
+.sidebar .nav-link {
+    color: #D9E3DF;
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--bs-warning);
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+}
+
+.ticket {
+    position: relative;
+}
+
+.ticket .perforation {
+    border-top: 2px dashed var(--bs-border-color);
+    margin: .75rem -1rem;
+    height: 0;
+    position: relative;
+}
+
+.ticket .perforation::before,
+.ticket .perforation::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bs-body-bg);
+}
+
+.ticket .perforation::before {
+    left: -7px;
+}
+
+.ticket .perforation::after {
+    right: -7px;
+}

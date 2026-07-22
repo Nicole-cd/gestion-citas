@@ -1,0 +1,82 @@
+{% extends "citas/base.html" %}
+{% load static %}
+
+{% block title %}Panel Administrador{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <small class="text-warning text-uppercase fw-semibold" style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
+    <h1 class="mb-1">Panel General</h1>
+    <p class="text-secondary mb-0">Resumen completo de la plataforma.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Clientes</h6>
+                <h2 class="text-primary">{{ total_clientes|default:"0" }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Freelancers</h6>
+                <h2 class="text-success">{{ total_freelancers|default:"0" }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Servicios</h6>
+                <h2 class="text-info">{{ total_servicios|default:"0" }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Citas hoy</h6>
+                <h2 class="text-warning">{{ citas_hoy|default:"0" }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Acciones rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'reportes' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-bar-chart me-2"></i> Ver reportes
+                    </a>
+                    <a href="{% url 'listado_freelancers' %}" class="btn btn-outline-success">
+                        <i class="bi bi-people me-2"></i> Gestionar freelancers
+                    </a>
+                    <a href="{% url 'historial_cambios' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-clock-history me-2"></i> Historial de cambios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Estado del sistema</h5>
+            </div>
+            <div class="card-body">
+                <p><span class="badge bg-success">● Activo</span> Sistema operativo</p>
+                <p><strong>Citas pendientes:</strong> {{ citas_pendientes|default:"0" }}</p>
+                <p><strong>Última actualización:</strong> {% now "d/m/Y H:i" %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

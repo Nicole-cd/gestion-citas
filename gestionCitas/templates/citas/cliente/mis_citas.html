@@ -1,0 +1,75 @@
+{% extends "citas/base.html" %}
+{% load static %}
+
+{% block title %}Mis Citas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+    <div>
+        <small class="text-warning text-uppercase fw-semibold" style="letter-spacing:.1em;font-size:.72rem;">Cliente</small>
+        <h1 class="mb-1">Mis Citas</h1>
+        <p class="text-secondary mb-0">Historial de tus reservas.</p>
+    </div>
+    <a href="{% url 'reservar_cita' %}" class="btn btn-warning btn-sm"><i class="bi bi-plus-lg me-1"></i>Nueva cita</a>
+</div>
+
+{% if citas %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Freelancer</th>
+                <th>Servicio</th>
+                <th>Modalidad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td><span class="mono text-secondary">#{{ cita.id_reserva }}</span></td>
+                <td>{{ cita.fecha|date:"d/m/Y" }}</td>
+                <td>{{ cita.hora_inicio|time:"H:i" }}</td>
+                <td>{{ cita.id_freelancer.nombre }}</td>
+                <td>{{ cita.id_servicio.nombre }}</td>
+                <td>
+                    <span class="badge {% if cita.modalidad == 'virtual' %}bg-success{% else %}bg-primary{% endif %}">
+                        {{ cita.get_modalidad_display }}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge 
+                        {% if cita.estado == 'programada' %}bg-warning
+                        {% elif cita.estado == 'confirmada' %}bg-info
+                        {% elif cita.estado == 'atendida' %}bg-success
+                        {% elif cita.estado == 'cancelada' %}bg-danger
+                        {% else %}bg-secondary
+                        {% endif %}">
+                        {{ cita.get_estado_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if cita.estado == 'programada' or cita.estado == 'confirmada' %}
+                    <a href="{% url 'cancelar_cita' cita.id_reserva %}" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-calendar2-week" style="font-size: 3rem; color: #ccc;"></i>
+    <h3 class="h5 mt-3 text-secondary">No tienes citas registradas</h3>
+    <p class="text-secondary">Comienza reservando tu primera cita con un freelancer.</p>
+    <a href="{% url 'reservar_cita' %}" class="btn btn-warning mt-2">Reservar cita</a>
+</div>
+{% endif %}
+{% endblock %}
