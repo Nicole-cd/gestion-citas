@@ -1,4 +1,3 @@
-{% load static %}
 
 {% load static %}
 <!DOCTYPE html>
@@ -19,38 +18,38 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <div class="border-bottom border-dark border-2 pb-3 mb-4">
-                    <small class="text-warning text-uppercase d-block" 
-                           style="letter-spacing:.1em;font-size:.7rem;">Citas para freelancers</small>
+                    <small class="text-warning text-uppercase d-block"
+                        style="letter-spacing:.1em;font-size:.7rem;">Citas para freelancers</small>
                     <h1 class="h3 mb-0">Crear cuenta</h1>
                 </div>
 
                 {% if messages %}
-                    {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'danger' }} py-2">{{ message }}</div>
-                    {% endfor %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'danger' }} py-2">{{ message }}</div>
+                {% endfor %}
                 {% endif %}
 
                 <form method="post" action="{% url 'registro' %}">
                     {% csrf_token %}
-                    
+
                     <div class="mb-3">
                         <label for="id_nombre" class="form-label fw-semibold small">Nombre completo</label>
                         <input type="text" class="form-control" id="id_nombre" name="nombre" maxlength="30"
                             placeholder="Ej. Nicole Carrión" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="id_correo" class="form-label fw-semibold small">Correo electrónico</label>
                         <input type="email" class="form-control" id="id_correo" name="correo" maxlength="30"
                             placeholder="Nicole@gmail.com" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="id_password" class="form-label fw-semibold small">Contraseña</label>
                         <input type="password" class="form-control" id="id_password" name="password" maxlength="20"
                             placeholder="Mínimo 6 caracteres" required minlength="6">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="id_rol" class="form-label fw-semibold small">Rol</label>
                         <select class="form-select" id="id_rol" name="rol" onchange="segunDisponibilidad()" required>
@@ -63,16 +62,16 @@
 
                     <div id="bloque-disponibilidad" style="display:none;">
                         <div class="mb-3">
-                            <label for="id_categoria" class="form-label fw-semibold small">Categoría / área de oficio</label>
+                            <label for="id_categoria" class="form-label fw-semibold small">Categoría</label>
                             <input type="text" class="form-control" id="id_categoria" name="categoria" maxlength="100"
-                                placeholder="Ej. Arte, Peluqueria...">
+                                placeholder="Ej. Arte, Peluquería...">
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-semibold small">Disponibilidad semanal</label>
-                            
+
                             <select class="form-select" name="disponibilidad">
-                                <option value="lv_9_17">Lunes a viernes, 9:00am – 5:00pm</option>
-                                <option value="lv_8_16">Lunes a viernes, 8:00am – 4:00pm</option>
+                                <option value="lv_9_17">Lunes a viernes, 9:00am a 5:00pm</option>
+                                <option value="lv_8_16">Lunes a viernes, 8:00am a 4:00pm</option>
                                 <option value="personalizado">Configurar después</option>
                             </select>
                         </div>
@@ -101,8 +100,8 @@
             }
         }
 
-        // Ejecutar al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             toggleDisponibilidad();
         });
     </script>

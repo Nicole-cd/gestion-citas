@@ -17,7 +17,7 @@ class Freelancer(models.Model):
     nombre = models.CharField(max_length=30)
     correo = models.EmailField(unique=True, max_length=30)
     contrasena = models.CharField(max_length=20)
-    categoria = models.CharField(max_length=25, blank=True)
+    categoria = models.CharField(max_length=15, blank=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
 
