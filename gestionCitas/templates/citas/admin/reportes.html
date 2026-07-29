@@ -1,0 +1,109 @@
+{% extends "citas/base.html" %}
+{% load static %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <small class="text-warning text-uppercase fw-semibold"
+        style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
+    <h1 class="mb-1">Reportes</h1>
+    <p class="text-secondary mb-0">Genera reportes de citas y servicios.</p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Desde</label>
+                <input type="date" name="desde" class="form-control" value="{{ desde }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Hasta</label>
+                <input type="date" name="hasta" class="form-control" value="{{ hasta }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo</label>
+                <select name="tipo" class="form-select">
+                    <option value="citas" {% if tipo=='citas' %}selected{% endif %}>Citas</option>
+                    <option value="servicios" {% if tipo=='servicios' %}selected{% endif %}>Servicios</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Total citas</h6>
+                <h2>{{ total_citas|default:"0" }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Total ingresos</h6>
+                <h2>RD$ {{ total_ingresos|floatformat:2|default:"0.00" }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Cliente</th>
+                        <th>Freelancer</th>
+                        <th>Servicio</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Ingreso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservas %}
+                    <tr>
+                        <td><span class="mono">#{{ r.id_reserva }}</span></td>
+                        <td>{{ r.id_cliente.nombre }}</td>
+                        <td>{{ r.id_freelancer.nombre }}</td>
+                        <td>{{ r.id_servicio.nombre }}</td>
+                        <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if r.estado == 'programada' %}bg-warning
+                                {% elif r.estado == 'confirmada' %}bg-info
+                                {% elif r.estado == 'atendida' %}bg-success
+                                {% elif r.estado == 'cancelada' %}bg-danger
+                                {% else %}bg-secondary
+                                {% endif %}">
+                                {{ r.get_estado_display }}
+                            </span>
+                        </td>
+                        <td>RD$ {{ r.id_servicio.precio_base|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mb-0">No hay registros para mostrar</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

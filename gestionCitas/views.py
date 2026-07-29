@@ -276,7 +276,6 @@ def disponibilidad_view(request):
         'ausencias': ausencias,
     })
 
-
 @requiere_rol('administrador')
 def admin_dashboard(request):
     total_clientes = Cliente.objects.count()
@@ -293,5 +292,73 @@ def admin_dashboard(request):
         'citas_pendientes': citas_pendientes,
     })
 
+@requiere_rol('administrador')
+def reportes_view(request):
+    tipo = request.GET.get('tipo', 'citas')
+    desde = request.GET.get('desde')
+    hasta = request.GET.get('hasta')
 
+    reservas = Reserva.objects.select_related('id_cliente', 'id_freelancer', 'id_servicio')
+
+    if desde:
+        reservas = reservas.filter(fecha__gte=desde)
+    if hasta:
+        reservas = reservas.filter(fecha__lte=hasta)
+
+    total_citas = reservas.count()
+    total_ingresos = reservas.filter(estado='atendida').aggregate(
+        total=Sum('id_servicio__precio_base')
+    )['total'] or 0
+
+    return render(request, 'citas/admin/reportes.html', {
+        'tipo': tipo,
+        'desde': desde,
+        'hasta': hasta,
+        'reservas': reservas,
+        'total_citas': total_citas,
+        'total_ingresos': total_ingresos,
+    })
+
+
+@requiere_rol('administrador')
+def historial_cambios_view(request):
+    historial = HistorialCambio.objects.select_related('administrador').order_by('-fecha_hora')
+    return render(request, 'citas/admin/historial_cambios.html', {'historial': historial})
+
+@requiere_rol('administrador')
+def listado_freelancers_view(request):
+    freelancers = Freelancer.objects.annotate(
+        servicios_count=Count('servicios')
+    )
+    return render(request, 'citas/admin/listado_freelancers.html', {
+        'freelancers': freelancers,
+        'total_freelancers': freelancers.count(),
+    })
+
+@requiere_rol('administrador')
+def reportes_view(request):
+    tipo = request.GET.get('tipo', 'citas')
+    desde = request.GET.get('desde')
+    hasta = request.GET.get('hasta')
+
+    reservas = Reserva.objects.select_related('id_cliente', 'id_freelancer', 'id_servicio')
+
+    if desde:
+        reservas = reservas.filter(fecha__gte=desde)
+    if hasta:
+        reservas = reservas.filter(fecha__lte=hasta)
+
+    total_citas = reservas.count()
+    total_ingresos = reservas.filter(estado='atendida').aggregate(
+        total=Sum('id_servicio__precio_base')
+    )['total'] or 0
+
+    return render(request, 'citas/admin/reportes.html', {
+        'tipo': tipo,
+        'desde': desde,
+        'hasta': hasta,
+        'reservas': reservas,
+        'total_citas': total_citas,
+        'total_ingresos': total_ingresos,
+    })
 

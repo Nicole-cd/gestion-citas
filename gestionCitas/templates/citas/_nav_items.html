@@ -1,8 +1,10 @@
+<!-- Parte general -->
 <div class="mb-4">
         <span class="navbar-brand text-white d-block">Agenda</span>
         <small class="text-warning text-uppercase" style="letter-spacing:.1em;font-size:.7rem;">Citas para
                 freelancers</small>
 </div>
+<!-- Parte especifica de clientes -->
 
 {% if request.session.rol == 'cliente' %}
 <small class="text-secondary text-uppercase d-block mb-2" style="font-size:.68rem;letter-spacing:.1em;">Cliente</small>
@@ -27,6 +29,8 @@
         </li>
 </ul>
 {% endif %}
+
+<!-- Parte especifica de freelancer-->
 
 {% if request.session.rol == 'freelancer' %}
 <small class="text-secondary text-uppercase d-block mb-2"
@@ -53,6 +57,8 @@
 </ul>
 {% endif %}
 
+
+<!-- Parte especifica de administrador-->
 {% if request.session.rol == 'administrador' %}
 <small class="text-secondary text-uppercase d-block mb-2"
         style="font-size:.68rem;letter-spacing:.1em;">Administración</small>

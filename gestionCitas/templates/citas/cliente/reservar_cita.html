@@ -30,7 +30,6 @@
                 <select name="servicio" id="selectServicio" class="form-select" required>
                     <option value="">Primero selecciona un freelancer</option>
                 </select>
-                <small class="text-secondary">Los servicios se cargarán al seleccionar un freelancer.</small>
             </div>
             
             <div class="mb-3">
@@ -64,14 +63,11 @@ document.getElementById('selectFreelancer').addEventListener('change', function(
     const freelancerId = this.value;
     const servicioSelect = document.getElementById('selectServicio');
     
-    // Limpiar opciones
     servicioSelect.innerHTML = '<option value="">Cargando servicios...</option>';
     
     if (freelancerId) {
         servicioSelect.innerHTML = `
             <option value="">Selecciona un servicio</option>
-            <option value="1">Servicio de ejemplo 1</option>
-            <option value="2">Servicio de ejemplo 2</option>
         `;
     } else {
         servicioSelect.innerHTML = '<option value="">Primero selecciona un freelancer</option>';

@@ -5,8 +5,7 @@
 
 {% block content %}
 <div class="mb-4">
-    <small class="text-warning text-uppercase fw-semibold"
-        style="letter-spacing:.1em;font-size:.72rem;">Freelancer</small>
+    <small class="text-warning text-uppercase fw-semibold" style="letter-spacing:.1em;font-size:.72rem;">Freelancer</small>
     <h1 class="mb-1">Disponibilidad Semanal</h1>
     <p class="text-secondary mb-0">Configura tus horarios de atención y días no disponibles.</p>
 </div>
@@ -31,25 +30,48 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for dia in 'lunes,martes,miercoles,jueves,viernes,sabado,domingo'|split:',' %}
                                 <tr>
-                                    <td>{{ dia|title }}</td>
-                                    <td>
-                                        <input type="checkbox" name="{{ dia }}_activo" {% if dia in disponibilidades
-                                            %}checked{% endif %}>
-                                    </td>
-                                    <td>
-                                        <input type="time" name="{{ dia }}_inicio"
-                                            value="{{ disponibilidades|get_item:dia|default:'09:00' }}"
-                                            class="form-control form-control-sm" style="width:100px;">
-                                    </td>
-                                    <td>
-                                        <input type="time" name="{{ dia }}_fin"
-                                            value="{{ disponibilidades|get_item:dia|default:'17:00' }}"
-                                            class="form-control form-control-sm" style="width:100px;">
-                                    </td>
+                                    <td>Lunes</td>
+                                    <td><input type="checkbox" name="lunes_activo" checked></td>
+                                    <td><input type="time" name="lunes_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="lunes_fin" value="17:00" class="form-control form-control-sm" style="width:100px;"></td>
                                 </tr>
-                                {% endfor %}
+                                <tr>
+                                    <td>Martes</td>
+                                    <td><input type="checkbox" name="martes_activo" checked></td>
+                                    <td><input type="time" name="martes_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="martes_fin" value="17:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                </tr>
+                                <tr>
+                                    <td>Miércoles</td>
+                                    <td><input type="checkbox" name="miercoles_activo" checked></td>
+                                    <td><input type="time" name="miercoles_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="miercoles_fin" value="17:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                </tr>
+                                <tr>
+                                    <td>Jueves</td>
+                                    <td><input type="checkbox" name="jueves_activo" checked></td>
+                                    <td><input type="time" name="jueves_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="jueves_fin" value="17:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                </tr>
+                                <tr>
+                                    <td>Viernes</td>
+                                    <td><input type="checkbox" name="viernes_activo" checked></td>
+                                    <td><input type="time" name="viernes_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="viernes_fin" value="17:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                </tr>
+                                <tr>
+                                    <td>Sábado</td>
+                                    <td><input type="checkbox" name="sabado_activo"></td>
+                                    <td><input type="time" name="sabado_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="sabado_fin" value="14:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                </tr>
+                                <tr>
+                                    <td>Domingo</td>
+                                    <td><input type="checkbox" name="domingo_activo"></td>
+                                    <td><input type="time" name="domingo_inicio" value="09:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                    <td><input type="time" name="domingo_fin" value="14:00" class="form-control form-control-sm" style="width:100px;"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -60,7 +82,7 @@
             </div>
         </div>
     </div>
-
+    
     <div class="col-lg-5">
         <div class="card">
             <div class="card-header">
@@ -71,21 +93,19 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label">Fecha</label>
-                        <input type="date" name="fecha_no_disponible" class="form-control" required
-                            min="{% now 'Y-m-d' %}">
+                        <input type="date" name="fecha_no_disponible" class="form-control" required min="{% now 'Y-m-d' %}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Motivo</label>
-                        <input type="text" name="motivo_no_disponible" class="form-control"
-                            placeholder="Vacaciones, feriado, etc.">
+                        <input type="text" name="motivo_no_disponible" class="form-control" placeholder="Vacaciones, feriado, etc.">
                     </div>
                     <button type="submit" class="btn btn-outline-danger w-100">
                         <i class="bi bi-calendar-x me-1"></i> Agregar día no disponible
                     </button>
                 </form>
-
+                
                 <hr>
-
+                
                 <h6 class="mb-3">Días bloqueados</h6>
                 {% if ausencias %}
                 <ul class="list-group">

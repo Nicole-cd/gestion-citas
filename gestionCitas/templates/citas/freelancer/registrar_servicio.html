@@ -1,0 +1,87 @@
+{% extends "citas/base.html" %}
+{% load static %}
+
+{% block title %}Mis Servicios{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <small class="text-warning text-uppercase fw-semibold" style="letter-spacing:.1em;font-size:.72rem;">Freelancer</small>
+    <h1 class="mb-1">Mis Servicios</h1>
+    <p class="text-secondary mb-0">Gestiona los servicios que ofreces a tus clientes.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Registrar nuevo servicio</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre del servicio</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Diseño de logo" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descripción</label>
+                        <textarea name="descripcion" class="form-control" rows="3" placeholder="Detalles del servicio..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Precio base (RD$)</label>
+                        <input type="number" name="precio_base" class="form-control" placeholder="1500" required step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Duración (minutos)</label>
+                        <input type="number" name="duracion" class="form-control" placeholder="60" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Modalidad</label>
+                        <select name="modalidad" class="form-select" required>
+                            <option value="ambos">Presencial y Virtual</option>
+                            <option value="presencial">Solo Presencial</option>
+                            <option value="virtual">Solo Virtual</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="bi bi-save me-1"></i> Guardar servicio
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Servicios registrados</h5>
+            </div>
+            <div class="card-body">
+                {% if servicios %}
+                <div class="list-group">
+                    {% for s in servicios %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ s.nombre }}</h6>
+                                <small class="text-secondary">RD$ {{ s.precio_base }} · {{ s.duracion }} min</small>
+                            </div>
+                            <span class="badge {% if s.activo %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ s.activo|yesno:"Activo,Inactivo" }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-3 text-secondary">
+                    <i class="bi bi-box" style="font-size: 2rem;"></i>
+                    <p class="mb-0">Aún no tienes servicios registrados.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

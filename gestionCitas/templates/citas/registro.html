@@ -56,15 +56,21 @@
                             <option value="" disabled selected>Selecciona un rol</option>
                             <option value="cliente">Cliente</option>
                             <option value="freelancer">Freelancer</option>
-                            <option value="administrador">Administrador</option>
                         </select>
                     </div>
 
                     <div id="bloque-disponibilidad" style="display:none;">
                         <div class="mb-3">
                             <label for="id_categoria" class="form-label fw-semibold small">Categoría</label>
-                            <input type="text" class="form-control" id="id_categoria" name="categoria" maxlength="100"
-                                placeholder="Ej. Arte, Peluquería...">
+                            <select class="form-select" id="id_categoria" name="categoria">
+                                <option value="" disabled selected>Selecciona una categoría</option>
+                                <option value="diseno_grafico">Diseño</option>
+                                <option value="programacion">Programación</option>
+                                <option value="musica">Música</option>
+                                <option value="contabilidad">Contabilidad</option>
+                                <option value="asesoria_legal">Asesoría Legal</option>
+                                <option value="marketing_digital">Marketing Digital</option>
+                            </select>
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-semibold small">Disponibilidad semanal</label>
