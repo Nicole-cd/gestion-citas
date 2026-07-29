@@ -235,3 +235,8 @@ def listado_freelancers(request):
     })
 
 
+@requiere_rol("administrador")
+def historial_cambios(request):
+    historial = HistorialCambio.objects.select_related('cita', 'usuario_responsable').all().order_by('-fecha_registro')
+    
+    return render(request, 'admin/historial_cambios.html', {'historial': historial})
