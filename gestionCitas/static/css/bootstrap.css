@@ -28,7 +28,11 @@
     --bs-link-hover-color: #4d3308;
 }
 
-h1, h2, h3, h4, .navbar-brand {
+h1,
+h2,
+h3,
+h4,
+.navbar-brand {
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 600;
     letter-spacing: -.01em;
@@ -93,4 +97,37 @@ h1, h2, h3, h4, .navbar-brand {
 
 .ticket .perforation::after {
     right: -7px;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+
+    .badge {
+        border: 1px solid #000;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .sidebar {
+        display: none !important;
+    }
+
+    main {
+        margin: 0 !important;
+        padding: 20px !important;
+        max-width: 100% !important;
+    }
 }

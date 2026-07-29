@@ -5,8 +5,7 @@
 
 {% block content %}
 <div class="mb-4">
-    <small class="text-warning text-uppercase fw-semibold"
-        style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
+    <small class="text-warning text-uppercase fw-semibold" style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
     <h1 class="mb-1">Reportes</h1>
     <p class="text-secondary mb-0">Genera reportes de citas y servicios.</p>
 </div>
@@ -16,17 +15,17 @@
         <form method="get" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Desde</label>
-                <input type="date" name="desde" class="form-control" value="{{ desde }}">
+                <input type="date" name="desde" class="form-control" value="{{ desde|default:'' }}">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Hasta</label>
-                <input type="date" name="hasta" class="form-control" value="{{ hasta }}">
+                <input type="date" name="hasta" class="form-control" value="{{ hasta|default:'' }}">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Tipo</label>
                 <select name="tipo" class="form-select">
-                    <option value="citas" {% if tipo=='citas' %}selected{% endif %}>Citas</option>
-                    <option value="servicios" {% if tipo=='servicios' %}selected{% endif %}>Servicios</option>
+                    <option value="citas">Citas</option>
+                    <option value="servicios">Servicios</option>
                 </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
@@ -81,13 +80,7 @@
                         <td>{{ r.id_servicio.nombre }}</td>
                         <td>{{ r.fecha|date:"d/m/Y" }}</td>
                         <td>
-                            <span class="badge 
-                                {% if r.estado == 'programada' %}bg-warning
-                                {% elif r.estado == 'confirmada' %}bg-info
-                                {% elif r.estado == 'atendida' %}bg-success
-                                {% elif r.estado == 'cancelada' %}bg-danger
-                                {% else %}bg-secondary
-                                {% endif %}">
+                            <span class="badge bg-warning">
                                 {{ r.get_estado_display }}
                             </span>
                         </td>
@@ -106,4 +99,15 @@
         </div>
     </div>
 </div>
+<br>
+
+<div class="no-print mb-4">
+    <div class="d-flex gap-2 flex-wrap">
+        <button onclick="window.print()" class="btn btn-success">
+            <i class="bi bi-printer me-1"></i> Imprimir / PDF
+        </button>
+
+    </div>
+</div>
+
 {% endblock %}

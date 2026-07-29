@@ -1,0 +1,10 @@
+
+function imprimirReporte() {
+    window.print();
+}
+
+
+
+
+
+

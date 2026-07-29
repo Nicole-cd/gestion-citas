@@ -362,3 +362,49 @@ def reportes_view(request):
         'total_ingresos': total_ingresos,
     })
 
+@requiere_rol('administrador')
+def crear_admin(request):
+    """Vista para que cualquier administrador pueda crear nuevos administradores"""
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        password = request.POST.get('password', '')
+        
+
+        if not nombre or not correo or not password:
+            messages.error(request, "Todos los campos son obligatorios.")
+            return render(request, 'citas/admin/crear_admin.html')
+        
+        if len(password) < 6:
+            messages.error(request, "La contraseña debe tener al menos 6 caracteres.")
+            return render(request, 'citas/admin/crear_admin.html')
+        
+
+        if Administrador.objects.filter(correo=correo).exists():
+            messages.error(request, f"El correo {correo} ya está registrado como administrador.")
+            return render(request, 'citas/admin/crear_admin.html')
+        
+
+        from .models import Cliente, Freelancer
+        if Cliente.objects.filter(correo_cliente=correo).exists():
+            messages.error(request, f"El correo {correo} ya está registrado como cliente.")
+            return render(request, 'citas/admin/crear_admin.html')
+        
+        if Freelancer.objects.filter(correo=correo).exists():
+            messages.error(request, f"El correo {correo} ya está registrado como freelancer.")
+            return render(request, 'citas/admin/crear_admin.html')
+        
+
+        from django.contrib.auth.hashers import make_password
+        Administrador.objects.create(
+            nombre=nombre,
+            correo=correo,
+            contrasena=make_password(password),
+            activo=True
+        )
+        
+        messages.success(request, f" Administrador {nombre} creado exitosamente.")
+        return redirect('admin_dashboard')
+    
+    return render(request, 'citas/admin/crear_admin.html')
