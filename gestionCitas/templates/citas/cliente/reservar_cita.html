@@ -14,35 +14,41 @@
     <div class="card-body">
         <form method="post" id="formReserva">
             {% csrf_token %}
-            
+
             <div class="mb-3">
                 <label class="form-label fw-semibold">Freelancer</label>
                 <select name="freelancer" id="selectFreelancer" class="form-select" required>
                     <option value="">Selecciona un freelancer</option>
                     {% for f in freelancers %}
-                    <option value="{{ f.id_freelancer }}">{{ f.nombre }} — {{ f.categoria|default:"Sin categoría" }}</option>
+                    <option value="{{ f.id_freelancer }}">{{ f.nombre }} — {{ f.categoria|default:"Sin categoría" }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
-            
+
             <div class="mb-3">
                 <label class="form-label fw-semibold">Servicio</label>
                 <select name="servicio" id="selectServicio" class="form-select" required>
                     <option value="">Primero selecciona un freelancer</option>
+                    {% for s in todos_servicios %}
+                    <option value="{{ s.id_servicio }}" data-freelancer="{{ s.id_freelancer.id_freelancer }}">
+                        {{ s.nombre }} - RD$ {{ s.precio_base }} ({{ s.duracion }} min)
+                    </option>
+                    {% endfor %}
                 </select>
             </div>
-            
+
             <div class="mb-3">
                 <label class="form-label fw-semibold">Fecha</label>
                 <input type="date" name="fecha" id="inputFecha" class="form-control" required min="{% now 'Y-m-d' %}">
             </div>
-            
+
             <div class="mb-3">
                 <label class="form-label fw-semibold">Hora</label>
                 <input type="time" name="hora" id="inputHora" class="form-control" required>
                 <small class="text-secondary">Horario disponible de 9:00 AM a 5:00 PM</small>
             </div>
-            
+
             <div class="mb-4">
                 <label class="form-label fw-semibold">Modalidad</label>
                 <select name="modalidad" class="form-select" required>
@@ -50,7 +56,7 @@
                     <option value="presencial">Presencial</option>
                 </select>
             </div>
-            
+
             <button type="submit" class="btn btn-warning w-100">
                 <i class="bi bi-calendar-check me-1"></i> Reservar Cita
             </button>
@@ -58,29 +64,5 @@
     </div>
 </div>
 
-<script>
-document.getElementById('selectFreelancer').addEventListener('change', function() {
-    const freelancerId = this.value;
-    const servicioSelect = document.getElementById('selectServicio');
-    
-    servicioSelect.innerHTML = '<option value="">Cargando servicios...</option>';
-    
-    if (freelancerId) {
-        servicioSelect.innerHTML = `
-            <option value="">Selecciona un servicio</option>
-        `;
-    } else {
-        servicioSelect.innerHTML = '<option value="">Primero selecciona un freelancer</option>';
-    }
-});
 
-
-document.getElementById('formReserva').addEventListener('submit', function(e) {
-    const hora = document.getElementById('inputHora').value;
-    if (hora < '09:00' || hora > '17:00') {
-        e.preventDefault();
-        alert('El horario debe estar entre 9:00 AM y 5:00 PM');
-    }
-});
-</script>
 {% endblock %}

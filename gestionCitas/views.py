@@ -117,6 +117,7 @@ def cliente_dashboard(request):
 @requiere_rol('cliente')
 def reservar_cita(request):
     freelancers = Freelancer.objects.filter(activo=True)
+    todos_servicios = Servicio.objects.filter(activo=True).select_related('id_freelancer')
 
     if request.method == 'POST':
         freelancer_id = request.POST.get('freelancer')
@@ -127,7 +128,10 @@ def reservar_cita(request):
 
         if not all([freelancer_id, servicio_id, fecha, hora, modalidad]):
             messages.error(request, "Todos los campos son obligatorios.")
-            return render(request, 'citas/cliente/reservar_cita.html', {'freelancers': freelancers})
+            return render(request, 'citas/cliente/reservar_cita.html', {
+                'freelancers': freelancers,
+                'todos_servicios': todos_servicios
+            })
 
         servicio = get_object_or_404(Servicio, pk=servicio_id)
 
@@ -160,7 +164,7 @@ def reservar_cita(request):
             messages.success(request, "Cita reservada exitosamente.")
             return redirect('mis_citas')
 
-    return render(request, 'citas/cliente/reservar_cita.html', {'freelancers': freelancers})
+    return render(request, 'citas/cliente/reservar_cita.html', {'freelancers': freelancers, 'todos_servicios': todos_servicios})
 
 @requiere_rol('cliente')
 def mis_citas(request):
