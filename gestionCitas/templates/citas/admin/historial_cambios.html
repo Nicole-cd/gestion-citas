@@ -1,0 +1,175 @@
+{% extends "citas/base.html" %}
+{% load static %}
+
+{% block title %}Historial de Cambios{% endblock %}
+
+{% block extra_head %}
+
+{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <small class="text-warning text-uppercase fw-semibold"
+        style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
+    <h1 class="mb-1">Historial de Cambios</h1>
+    <p class="text-secondary mb-0">Registro de todas las acciones realizadas en el sistema.</p>
+</div>
+
+<!-- filtros -->
+<div class="card mb-4 no-print">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Fecha desde</label>
+                <input type="date" name="desde" class="form-control" value="{{ desde|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fecha hasta</label>
+                <input type="date" name="hasta" class="form-control" value="{{ hasta|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Acción</label>
+                <select name="accion" class="form-select" id="selectAccion">
+                    <option value="">Todas</option>
+                    <option value="crear">Crear</option>
+                    <option value="editar">Editar</option>
+                    <option value="eliminar">Eliminar</option>
+                    <option value="cancelar">Cancelar</option>
+                    <option value="atender">Atender</option>
+                    <option value="login">Login</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="mb-3 no-print">
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'historial_cambios' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-clockwise me-1"></i> Limpiar filtros
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-printer me-1"></i> Imprimir
+        </button>
+    </div>
+</div>
+
+<!-- Resumen de estadísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Total cambios</h6>
+                <h2>{{ historial|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle text-secondary">Último cambio</h6>
+                <h6 class="text-primary">
+                    {% if historial %}
+                    {{ historial.first.fecha_hora|date:"d/m/Y H:i" }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </h6>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+        {% if historial %}
+        <div class="timeline">
+            {% for item in historial %}
+            <div class="timeline-item 
+                {% if 'crear' in item.accion|lower %}success
+                {% elif 'editar' in item.accion|lower %}info
+                {% elif 'eliminar' in item.accion|lower or 'cancelar' in item.accion|lower %}danger
+                {% elif 'atender' in item.accion|lower %}success
+                {% elif 'login' in item.accion|lower %}warning
+                {% else %}info{% endif %}">
+
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge 
+                            {% if 'crear' in item.accion|lower %}bg-success
+                            {% elif 'editar' in item.accion|lower %}bg-info
+                            {% elif 'eliminar' in item.accion|lower or 'cancelar' in item.accion|lower %}bg-danger
+                            {% elif 'atender' in item.accion|lower %}bg-success
+                            {% elif 'login' in item.accion|lower %}bg-warning text-dark
+                            {% else %}bg-secondary{% endif %}">
+                            {{ item.accion|upper }}
+                        </span>
+                        <span class="text-secondary ms-2">
+                            <i class="bi bi-person me-1"></i>
+                            {{ item.administrador.nombre|default:"Sistema" }}
+                        </span>
+                    </div>
+                    <small class="text-secondary">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ item.fecha_hora|date:"d/m/Y H:i" }}
+                    </small>
+                </div>
+
+                <div class="ms-2">
+                    <p class="mb-1">
+                        <strong>{{ item.modulo }}:</strong> {{ item.descripcion }}
+                    </p>
+                    <small class="text-muted">
+                        <i class="bi bi-tag me-1"></i>
+                        Módulo: {{ item.modulo }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+
+        {% if historial.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if historial.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ historial.previous_page_number }}&desde={{ desde }}&hasta={{ hasta }}&accion={{ accion }}">&laquo;</a>
+                </li>
+                {% endif %}
+
+                {% for i in historial.paginator.page_range %}
+                <li class="page-item {% if historial.number == i %}active{% endif %}">
+                    <a class="page-link" href="?page={{ i }}&desde={{ desde }}&hasta={{ hasta }}&accion={{ accion }}">{{
+                        i }}</a>
+                </li>
+                {% endfor %}
+
+                {% if historial.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ historial.next_page_number }}&desde={{ desde }}&hasta={{ hasta }}&accion={{ accion }}">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-clock-history" style="font-size: 4rem; color: #ccc;"></i>
+            <h3 class="h5 mt-3 text-secondary">No hay registros en el historial</h3>
+            <p class="text-secondary">Las acciones realizadas en el sistema aparecerán aquí.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

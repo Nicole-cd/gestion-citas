@@ -131,3 +131,60 @@ h4,
         max-width: 100% !important;
     }
 }
+
+.filtro-badge {
+        cursor: pointer;
+        padding: 5px 12px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        background: white;
+        transition: all 0.3s;
+    }
+    .filtro-badge:hover {
+        background: #f0f0f0;
+    }
+    .filtro-badge.activo {
+        background: #142C2C;
+        color: white;
+        border-color: #142C2C;
+    }
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    .timeline-item {
+        border-left: 2px solid #e0e0e0;
+        padding-left: 20px;
+        padding-bottom: 20px;
+        position: relative;
+    }
+    .timeline-item::before {
+        content: '';
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #142C2C;
+        position: absolute;
+        left: -7px;
+        top: 5px;
+    }
+    .timeline-item:last-child {
+        border-left: none;
+    }
+    .timeline-item.success::before {
+        background: #28a745;
+    }
+    .timeline-item.warning::before {
+        background: #ffc107;
+    }
+    .timeline-item.danger::before {
+        background: #dc3545;
+    }
+    .timeline-item.info::before {
+        background: #17a2b8;
+    }

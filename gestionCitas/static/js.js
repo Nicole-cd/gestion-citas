@@ -1,4 +1,4 @@
-//imprimir reportes
+///imprimir reportes
 function imprimirReporte() {
     window.print();
 }
@@ -47,3 +47,6 @@ document.getElementById('formReserva').addEventListener('submit', function(e) {
         alert('El horario debe estar entre 9:00 AM y 5:00 PM');
     }
 });
+
+
+///para el historial de cambios

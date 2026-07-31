@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Count, Sum
 from .models import Cliente, Freelancer, Administrador, Servicio, Reserva, Disponibilidad, NoDisponibilidad, HistorialCambio
 
+
 def get_rol(request):
     return request.session.get('rol')
 
@@ -74,7 +75,7 @@ def registro_view(request):
                 contrasena=password,
                 categoria=request.POST.get('categoria', '')
             )
-            # Crear disponibilidad por defecto
+
             dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes']
             for dia in dias:
                 Disponibilidad.objects.create(
@@ -84,14 +85,6 @@ def registro_view(request):
                     hora_fin='17:00'
                 )
             messages.success(request, "Cuenta de freelancer creada exitosamente.")
-            return redirect('login')
-        elif rol == 'administrador':
-            Administrador.objects.create(
-                nombre=nombre,
-                correo=correo,
-                contrasena=password
-            )
-            messages.success(request, "Cuenta de administrador creada exitosamente.")
             return redirect('login')
         else:
             messages.error(request, "Selecciona un rol válido.")
@@ -147,7 +140,6 @@ def reservar_cita(request):
         else:
             hora_inicio = datetime.strptime(hora, '%H:%M').time()
             hora_fin = datetime.strptime(hora, '%H:%M').time()
-            # Calcular hora_fin sumando duración
             from datetime import timedelta
             hora_fin_dt = datetime.combine(date.today(), hora_inicio) + timedelta(minutes=servicio.duracion)
             hora_fin = hora_fin_dt.time()
@@ -161,6 +153,7 @@ def reservar_cita(request):
                 hora_fin=hora_fin,
                 modalidad=modalidad,
             )
+
             messages.success(request, "Cita reservada exitosamente.")
             return redirect('mis_citas')
 
@@ -182,6 +175,7 @@ def cancelar_cita(request, pk):
         cita.estado = 'cancelada'
         cita.motivo_cancelacion = request.POST.get('motivo', '')
         cita.save()
+
         messages.success(request, "Cita cancelada exitosamente.")
         return redirect('mis_citas')
 
@@ -217,6 +211,7 @@ def atender_cita(request, pk):
         cita.estado = 'atendida'
         cita.observaciones = request.POST.get('observaciones', '')
         cita.save()
+
         messages.success(request, "Servicio finalizado exitosamente.")
         return redirect('freelancer_dashboard')
 
@@ -325,11 +320,6 @@ def reportes_view(request):
 
 
 @requiere_rol('administrador')
-def historial_cambios_view(request):
-    historial = HistorialCambio.objects.select_related('administrador').order_by('-fecha_hora')
-    return render(request, 'citas/admin/historial_cambios.html', {'historial': historial})
-
-@requiere_rol('administrador')
 def listado_freelancers_view(request):
     freelancers = Freelancer.objects.annotate(
         servicios_count=Count('servicios')
@@ -366,49 +356,3 @@ def reportes_view(request):
         'total_ingresos': total_ingresos,
     })
 
-@requiere_rol('administrador')
-def crear_admin(request):
-    """Vista para que cualquier administrador pueda crear nuevos administradores"""
-    
-    if request.method == 'POST':
-        nombre = request.POST.get('nombre', '').strip()
-        correo = request.POST.get('correo', '').strip()
-        password = request.POST.get('password', '')
-        
-
-        if not nombre or not correo or not password:
-            messages.error(request, "Todos los campos son obligatorios.")
-            return render(request, 'citas/admin/crear_admin.html')
-        
-        if len(password) < 6:
-            messages.error(request, "La contraseña debe tener al menos 6 caracteres.")
-            return render(request, 'citas/admin/crear_admin.html')
-        
-
-        if Administrador.objects.filter(correo=correo).exists():
-            messages.error(request, f"El correo {correo} ya está registrado como administrador.")
-            return render(request, 'citas/admin/crear_admin.html')
-        
-
-        from .models import Cliente, Freelancer
-        if Cliente.objects.filter(correo_cliente=correo).exists():
-            messages.error(request, f"El correo {correo} ya está registrado como cliente.")
-            return render(request, 'citas/admin/crear_admin.html')
-        
-        if Freelancer.objects.filter(correo=correo).exists():
-            messages.error(request, f"El correo {correo} ya está registrado como freelancer.")
-            return render(request, 'citas/admin/crear_admin.html')
-        
-
-        from django.contrib.auth.hashers import make_password
-        Administrador.objects.create(
-            nombre=nombre,
-            correo=correo,
-            contrasena=make_password(password),
-            activo=True
-        )
-        
-        messages.success(request, f" Administrador {nombre} creado exitosamente.")
-        return redirect('admin_dashboard')
-    
-    return render(request, 'citas/admin/crear_admin.html')
