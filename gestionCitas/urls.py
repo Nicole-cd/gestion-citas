@@ -21,9 +21,9 @@ urlpatterns = [
 
     # admin
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin-panel/historial/', views.historial_cambios_view, name='historial_cambios'),
     path('admin-panel/reportes/', views.reportes_view, name='reportes'),
-    path('admin-panel/freelancers/', views.listado_freelancers_view, name='listado_freelancers'),
+    path('admin-panel/historial/', views.historial_cambios_view, name='historial_cambios'),
+
 
 
 

@@ -3,7 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Count, Sum
-from .models import Cliente, Freelancer, Administrador, Servicio, Reserva, Disponibilidad, NoDisponibilidad, HistorialCambio
+from .models import Cliente, Freelancer, Administrador, Servicio, Reserva, Disponibilidad, NoDisponibilidad
+from .models import HistorialCambio, Administrador
+from django.contrib.auth.hashers import make_password
+from django.core.paginator import Paginator
 
 
 def get_rol(request):
@@ -318,41 +321,44 @@ def reportes_view(request):
         'total_ingresos': total_ingresos,
     })
 
-
 @requiere_rol('administrador')
-def listado_freelancers_view(request):
-    freelancers = Freelancer.objects.annotate(
-        servicios_count=Count('servicios')
-    )
-    return render(request, 'citas/admin/listado_freelancers.html', {
-        'freelancers': freelancers,
-        'total_freelancers': freelancers.count(),
-    })
-
-@requiere_rol('administrador')
-def reportes_view(request):
-    tipo = request.GET.get('tipo', 'citas')
-    desde = request.GET.get('desde')
-    hasta = request.GET.get('hasta')
-
-    reservas = Reserva.objects.select_related('id_cliente', 'id_freelancer', 'id_servicio')
-
+def historial_cambios_view(request):
+    """Vista para ver el historial de cambios"""
+    historial = HistorialCambio.objects.select_related('administrador').order_by('-fecha_hora')
+    
+    desde = request.GET.get('desde', '')
+    hasta = request.GET.get('hasta', '')
+    accion = request.GET.get('accion', '')
+    
     if desde:
-        reservas = reservas.filter(fecha__gte=desde)
+        try:
+            historial = historial.filter(fecha_hora__date__gte=desde)
+        except:
+            pass
+    
     if hasta:
-        reservas = reservas.filter(fecha__lte=hasta)
+        try:
+            historial = historial.filter(fecha_hora__date__lte=hasta)
+        except:
+            pass
+    
+    if accion:
+        historial = historial.filter(accion__icontains=accion)
 
-    total_citas = reservas.count()
-    total_ingresos = reservas.filter(estado='atendida').aggregate(
-        total=Sum('id_servicio__precio_base')
-    )['total'] or 0
-
-    return render(request, 'citas/admin/reportes.html', {
-        'tipo': tipo,
+    total_cambios = historial.count()
+    
+    paginator = Paginator(historial, 20)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'historial': page_obj,
+        'total_cambios': total_cambios,
         'desde': desde,
         'hasta': hasta,
-        'reservas': reservas,
-        'total_citas': total_citas,
-        'total_ingresos': total_ingresos,
-    })
+        'accion': accion,
+    }
+    
+    return render(request, 'citas/admin/historial_cambios.html', context)
+
 

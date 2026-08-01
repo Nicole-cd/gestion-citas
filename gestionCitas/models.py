@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.utils import timezone
 
 class Cliente(models.Model):
     id_cliente = models.AutoField(primary_key=True)
@@ -7,7 +8,6 @@ class Cliente(models.Model):
     correo_cliente = models.EmailField(unique=True, max_length=30)
     contrasena = models.CharField(max_length=20)
     fecha_registro = models.DateTimeField(auto_now_add=True)
-    activo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre
@@ -121,12 +121,143 @@ class NoDisponibilidad(models.Model):
 
 
 class HistorialCambio(models.Model):
+    
     id_historial = models.AutoField(primary_key=True)
-    administrador = models.ForeignKey(Administrador, on_delete=models.CASCADE, related_name='historial_cambios')
-    accion = models.CharField(max_length=10)
-    modulo = models.CharField(max_length=15)
-    descripcion = models.TextField()
-    fecha_hora = models.DateTimeField(auto_now_add=True)
+    
+    administrador = models.ForeignKey(
+        'Administrador', 
+        on_delete=models.SET_NULL,  
+        null=True,
+        blank=True,
+        related_name='historial_cambios'
+    )
+    
+    ACCIONES = [
+        ('crear', 'Crear'),
+        ('editar', 'Editar'),
+        ('eliminar', 'Eliminar'),
+        ('cancelar', 'Cancelar'),
+        ('atender', 'Atender'),
+        ('login', 'Inicio de sesión'),
+        ('logout', 'Cierre de sesión'),
+        ('reprogramar', 'Reprogramar'),
+        ('confirmar', 'Confirmar'),
+        ('rechazar', 'Rechazar'),
+        ('activar', 'Activar'),
+        ('desactivar', 'Desactivar'),
+        ('exportar', 'Exportar'),
+        ('importar', 'Importar'),
+        ('resetear', 'Resetear'),
+    ]
+    
+    accion = models.CharField(
+        max_length=20,
+        choices=ACCIONES,
+        db_index=True,
+        help_text="Tipo de acción realizada"
+    )
+    
+    MODULOS = [
+        ('Sistema', 'Sistema'),
+        ('Citas', 'Citas'),
+        ('Servicios', 'Servicios'),
+        ('Freelancers', 'Freelancers'),
+        ('Clientes', 'Clientes'),
+        ('Administradores', 'Administradores'),
+        ('Usuarios', 'Usuarios'),
+        ('Reportes', 'Reportes'),
+        ('Disponibilidad', 'Disponibilidad'),
+        ('Pagos', 'Pagos'),
+        ('Notificaciones', 'Notificaciones'),
+        ('Perfil', 'Perfil'),
+        ('Seguridad', 'Seguridad'),
+    ]
+    
+    modulo = models.CharField(
+        max_length=50,
+        choices=MODULOS,
+        db_index=True,
+        help_text="Módulo del sistema afectado"
+    )
+    
+    descripcion = models.TextField(
+        max_length=500,
+        help_text="Descripción detallada de la acción realizada"
+    )
+    
+    registro_id = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="ID del registro afectado"
+    )
+    
+    registro_nombre = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Nombre o descripción del registro afectado"
+    )
+    
+    datos_anteriores = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Datos anteriores del registro"
+    )
+    
+    datos_nuevos = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Datos nuevos del registro"
+    )
 
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        help_text="Dirección IP del usuario"
+    )
+    
+    user_agent = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Navegador del usuario"
+    )
+    
+    fecha_hora = models.DateTimeField(
+        default=timezone.now,
+        db_index=True,
+        help_text="Fecha y hora del cambio"
+    )
+    
     def __str__(self):
-        return f"{self.accion} - {self.fecha_hora}"
+        return f"{self.fecha_hora.strftime('%d/%m/%Y %H:%M')} - {self.get_accion_display()} - {self.modulo}"
+    
+    class Meta:
+        verbose_name = "Historial de Cambio"
+        verbose_name_plural = "Historial de Cambios"
+        ordering = ['-fecha_hora']
+        indexes = [
+            models.Index(fields=['fecha_hora']),
+            models.Index(fields=['accion', 'modulo']),
+        ]
+    
+    @classmethod
+    def registrar(cls, administrador, accion, modulo, descripcion, 
+                registro_id=None, registro_nombre=None, 
+                datos_anteriores=None, datos_nuevos=None,
+                ip_address=None, user_agent=None):
+
+        return cls.objects.create(
+            administrador=administrador,
+            accion=accion,
+            modulo=modulo,
+            descripcion=descripcion,
+            registro_id=registro_id,
+            registro_nombre=registro_nombre,
+            datos_anteriores=datos_anteriores,
+            datos_nuevos=datos_nuevos,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            fecha_hora=timezone.now()
+        )
+    
