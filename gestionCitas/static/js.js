@@ -5,18 +5,18 @@ function imprimirReporte() {
 
 
 ///seleccionar servicios en reservar cita
-document.getElementById('selectFreelancer').addEventListener('change', function() {
+document.getElementById('selectFreelancer').addEventListener('change', function () {
     const freelancerId = this.value;
     const servicioSelect = document.getElementById('selectServicio');
     const servicioInfo = document.getElementById('servicioInfo');
-    
+
     const todasOpciones = servicioSelect.querySelectorAll('option');
     let serviciosEncontrados = 0;
-    
+
     todasOpciones.forEach(option => {
         option.style.display = 'none';
     });
-    
+
     if (freelancerId) {
         todasOpciones.forEach(option => {
             const dataFreelancer = option.getAttribute('data-freelancer');
@@ -25,7 +25,7 @@ document.getElementById('selectFreelancer').addEventListener('change', function(
                 serviciosEncontrados++;
             }
         });
-        
+
         const primeraOpcion = servicioSelect.querySelector('option[style*="display: block"]');
         if (primeraOpcion) {
             servicioSelect.value = primeraOpcion.value;
@@ -40,7 +40,7 @@ document.getElementById('selectFreelancer').addEventListener('change', function(
     }
 });
 
-document.getElementById('formReserva').addEventListener('submit', function(e) {
+document.getElementById('formReserva').addEventListener('submit', function (e) {
     const hora = document.getElementById('inputHora').value;
     if (hora < '09:00' || hora > '17:00') {
         e.preventDefault();
@@ -48,5 +48,18 @@ document.getElementById('formReserva').addEventListener('submit', function(e) {
     }
 });
 
+function segunDisponibilidad() {
+    var rol = document.getElementById('id_rol').value;
+    var bloque = document.getElementById('bloque-disponibilidad');
+    if (rol === 'freelancer') {
+        bloque.style.display = 'block';
+    } else {
+        bloque.style.display = 'none';
+    }
+}
 
-///para el historial de cambios
+
+document.addEventListener('DOMContentLoaded', function () {
+    toggleDisponibilidad();
+});
+

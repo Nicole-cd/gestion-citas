@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,19 +7,28 @@ from .models import Cliente, Freelancer, Administrador, Servicio, Reserva, Dispo
 from .models import HistorialCambio, Administrador
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
+from django.core.mail import send_mail
+from django.conf import settings
 
-
+#general
 def get_rol(request):
     return request.session.get('rol')
 
 def requiere_rol(*roles):
+
     def decorador(vista):
-        def envoltura(request, *args, **kwargs):
-            if get_rol(request) not in roles:
-                messages.error(request, "Debes iniciar sesión para continuar")
+        def wrapper(request, *args, **kwargs):
+
+            if 'rol' not in request.session:
+                messages.error(request, "Debes iniciar sesión para continuar.")
                 return redirect('login')
+
+            if request.session.get('rol') not in roles:
+                messages.error(request, "No tienes permiso para acceder a esta sección.")
+                return redirect('login')
+
             return vista(request, *args, **kwargs)
-        return envoltura
+        return wrapper
     return decorador
 
 def login_view(request):
@@ -94,6 +103,7 @@ def registro_view(request):
 
     return render(request, 'citas/registro.html')
 
+#cliente
 
 @requiere_rol('cliente')
 def cliente_dashboard(request):
@@ -114,7 +124,7 @@ def cliente_dashboard(request):
 def reservar_cita(request):
     freelancers = Freelancer.objects.filter(activo=True)
     todos_servicios = Servicio.objects.filter(activo=True).select_related('id_freelancer')
-
+    
     if request.method == 'POST':
         freelancer_id = request.POST.get('freelancer')
         servicio_id = request.POST.get('servicio')
@@ -129,8 +139,7 @@ def reservar_cita(request):
                 'todos_servicios': todos_servicios
             })
 
-        servicio = get_object_or_404(Servicio, pk=servicio_id)
-
+        servicio = get_object_or_404(Servicio, pk=servicio_id, activo=True)
 
         conflicto = Reserva.objects.filter(
             id_freelancer_id=freelancer_id,
@@ -140,27 +149,85 @@ def reservar_cita(request):
 
         if conflicto:
             messages.error(request, "El horario ya no está disponible. Elige otro horario.")
-        else:
-            hora_inicio = datetime.strptime(hora, '%H:%M').time()
-            hora_fin = datetime.strptime(hora, '%H:%M').time()
-            from datetime import timedelta
-            hora_fin_dt = datetime.combine(date.today(), hora_inicio) + timedelta(minutes=servicio.duracion)
-            hora_fin = hora_fin_dt.time()
+            return render(request, 'citas/cliente/reservar_cita.html', {
+                'freelancers': freelancers,
+                'todos_servicios': todos_servicios
+            })
 
-            Reserva.objects.create(
-                id_cliente_id=request.session['user_id'],
-                id_freelancer_id=freelancer_id,
-                id_servicio=servicio,
-                fecha=fecha,
-                hora_inicio=hora_inicio,
-                hora_fin=hora_fin,
-                modalidad=modalidad,
+        hora_inicio = datetime.strptime(hora, '%H:%M').time()
+        hora_fin_dt = datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=servicio.duracion)
+        hora_fin = hora_fin_dt.time()
+
+        reserva = Reserva.objects.create(
+            id_cliente_id=request.session['user_id'],
+            id_freelancer_id=freelancer_id,
+            id_servicio=servicio,
+            fecha=fecha,
+            hora_inicio=hora_inicio,
+            hora_fin=hora_fin,
+            modalidad=modalidad,
+            estado='programada'
+        )
+
+        try:
+            cliente = reserva.id_cliente
+            freelancer = reserva.id_freelancer  
+            servicio = reserva.id_servicio
+
+            fecha_str = str(reserva.fecha)
+            hora_str = str(reserva.hora_inicio)
+        
+            print(f"Cliente: {cliente.nombre} - {cliente.correo_cliente}")
+            print(f"Freelancer: {freelancer.nombre} - {freelancer.correo}")
+            
+
+            mensaje = f"""
+            Hola {cliente.nombre},
+            
+            Tu cita ha sido confirmada exitosamente.
+            
+            Detalles:
+            - Servicio: {servicio.nombre}
+            - Profesional: {freelancer.nombre}
+            - Fecha: {fecha_str}
+            - Hora: {hora_str}
+            - Modalidad: {reserva.get_modalidad_display()}
+            
+            ¡Gracias por usar nuestro servicio!
+            """
+
+            send_mail(
+                subject=f'Cita confirmada - {servicio.nombre}',
+                message=mensaje,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[cliente.correo_cliente],
+                fail_silently=False,
             )
+            
+            send_mail(
+                subject=f'Nueva cita - {servicio.nombre}',
+                message=f"Hola {freelancer.nombre},\n\nTienes una nueva cita:\n\n{cliente.nombre} ha reservado {servicio.nombre} para el {fecha_str} a las {hora_str}.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[freelancer.correo],
+                fail_silently=False,
+            )
+            
+            print("correo enviado exitosamente.")
+            messages.success(request, "Cita reservada exitosamente. Revisa tu correo para los detalles.")
+            
+        except Exception as e:
+            print(f" Error al enviar correo: {e}")
+            import traceback
+            traceback.print_exc()
+            messages.warning(request, f"Cita reservada, pero hubo un problema al enviar el correo.")
 
-            messages.success(request, "Cita reservada exitosamente.")
-            return redirect('mis_citas')
+        return redirect('mis_citas')
 
-    return render(request, 'citas/cliente/reservar_cita.html', {'freelancers': freelancers, 'todos_servicios': todos_servicios})
+    return render(request, 'citas/cliente/reservar_cita.html', {
+        'freelancers': freelancers,
+        'todos_servicios': todos_servicios
+    })
+
 
 @requiere_rol('cliente')
 def mis_citas(request):
@@ -184,6 +251,7 @@ def cancelar_cita(request, pk):
 
     return render(request, 'citas/cliente/cancelar_cita.html', {'cita': cita})
 
+#freelancer
 
 @requiere_rol('freelancer')
 def freelancer_dashboard(request):
@@ -278,6 +346,8 @@ def disponibilidad_view(request):
         'ausencias': ausencias,
     })
 
+#admin
+
 @requiere_rol('administrador')
 def admin_dashboard(request):
     total_clientes = Cliente.objects.count()
@@ -361,4 +431,85 @@ def historial_cambios_view(request):
     
     return render(request, 'citas/admin/historial_cambios.html', context)
 
+@requiere_rol('administrador')
+def crear_admin(request):
 
+    administradores = Administrador.objects.all().order_by('-fecha_registro')
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        password = request.POST.get('password', '')
+        
+        if not nombre or not correo or not password:
+            messages.error(request, "Todos los campos son obligatorios.")
+            return render(request, 'citas/admin/crear_admin.html', {
+                'administradores': administradores
+            })
+        
+        if len(password) < 6:
+            messages.error(request, "La contraseña debe tener al menos 6 caracteres.")
+            return render(request, 'citas/admin/crear_admin.html', {
+                'administradores': administradores
+            })
+        
+        if Administrador.objects.filter(correo=correo).exists():
+            messages.error(request, f"El correo {correo} ya está registrado como administrador.")
+            return render(request, 'citas/admin/crear_admin.html', {
+                'administradores': administradores
+            })
+        
+        from .models import Cliente, Freelancer
+        if Cliente.objects.filter(correo_cliente=correo).exists():
+            messages.error(request, f"El correo {correo} ya está registrado como cliente.")
+            return render(request, 'citas/admin/crear_admin.html', {
+                'administradores': administradores
+            })
+        
+        if Freelancer.objects.filter(correo=correo).exists():
+            messages.error(request, f"El correo {correo} ya está registrado como freelancer.")
+            return render(request, 'citas/admin/crear_admin.html', {
+                'administradores': administradores
+            })
+        
+
+        from django.contrib.auth.hashers import make_password
+        Administrador.objects.create(
+            nombre=nombre,
+            correo=correo,
+            contrasena=make_password(password)
+
+        )
+        
+        messages.success(request, f"Administrador {nombre} creado exitosamente.")
+        return redirect('admin_dashboard')
+    
+    return render(request, 'citas/admin/crear_admin.html', {
+        'administradores': administradores
+    })
+
+@requiere_rol('administrador')
+def listado_freelancers_view(request):
+
+
+    freelancers = Freelancer.objects.annotate(
+        servicios_count=Count('servicios')
+    ).order_by('-fecha_registro')
+    
+    
+    total_freelancers = freelancers.count()
+    freelancers_activos = freelancers.filter(activo=True).count()
+    freelancers_inactivos = freelancers.filter(activo=False).count()
+    
+    from django.core.paginator import Paginator
+    paginator = Paginator(freelancers, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'citas/admin/listado_freelancers.html', {
+        'freelancers': page_obj,
+        'total_freelancers': total_freelancers,
+        'freelancers_activos': freelancers_activos,
+        'freelancers_inactivos': freelancers_inactivos,
+        
+    })

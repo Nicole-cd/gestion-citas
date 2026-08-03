@@ -133,58 +133,201 @@ h4,
 }
 
 .filtro-badge {
-        cursor: pointer;
-        padding: 5px 12px;
-        border-radius: 20px;
-        border: 1px solid #ddd;
-        background: white;
-        transition: all 0.3s;
-    }
-    .filtro-badge:hover {
-        background: #f0f0f0;
-    }
-    .filtro-badge.activo {
-        background: #142C2C;
-        color: white;
-        border-color: #142C2C;
-    }
-    .timeline-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-    }
-    .timeline-item {
-        border-left: 2px solid #e0e0e0;
-        padding-left: 20px;
-        padding-bottom: 20px;
-        position: relative;
-    }
-    .timeline-item::before {
-        content: '';
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: #142C2C;
-        position: absolute;
-        left: -7px;
-        top: 5px;
-    }
-    .timeline-item:last-child {
-        border-left: none;
-    }
-    .timeline-item.success::before {
-        background: #28a745;
-    }
-    .timeline-item.warning::before {
-        background: #ffc107;
-    }
-    .timeline-item.danger::before {
-        background: #dc3545;
-    }
-    .timeline-item.info::before {
-        background: #17a2b8;
-    }
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: white;
+    transition: all 0.3s;
+}
+
+.filtro-badge:hover {
+    background: #f0f0f0;
+}
+
+.filtro-badge.activo {
+    background: #142C2C;
+    color: white;
+    border-color: #142C2C;
+}
+
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.timeline-item {
+    border-left: 2px solid #e0e0e0;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #142C2C;
+    position: absolute;
+    left: -7px;
+    top: 5px;
+}
+
+.timeline-item:last-child {
+    border-left: none;
+}
+
+.timeline-item.success::before {
+    background: #28a745;
+}
+
+.timeline-item.warning::before {
+    background: #ffc107;
+}
+
+.timeline-item.danger::before {
+    background: #dc3545;
+}
+
+.timeline-item.info::before {
+    background: #17a2b8;
+}
+
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f6f6f6;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    background: #142C2C;
+    padding: 25px 30px;
+    text-align: center;
+}
+
+.header h1 {
+    color: #ffffff;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.header small {
+    color: #E4A64B;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.content {
+    padding: 30px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.status-confirmacion {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-recordatorio {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-cancelacion {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-modificacion {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.details {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.detail-value {
+    color: #142C2C;
+    font-weight: 500;
+}
+
+.btn-calendar {
+    display: inline-block;
+    background: #4285f4;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 10px 0;
+    transition: background 0.3s;
+}
+
+.btn-calendar:hover {
+    background: #3367d6;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.footer a {
+    color: #142C2C;
+    text-decoration: none;
+}
+
+.divider {
+    border: none;
+    border-top: 2px dashed #dee2e6;
+    margin: 25px 0;
+}

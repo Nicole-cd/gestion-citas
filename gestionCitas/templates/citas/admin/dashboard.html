@@ -4,8 +4,10 @@
 {% block title %}Panel Administrador{% endblock %}
 
 {% block content %}
+
 <div class="mb-4">
-    <small class="text-warning text-uppercase fw-semibold" style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
+    <small class="text-warning text-uppercase fw-semibold"
+        style="letter-spacing:.1em;font-size:.72rem;">Administración</small>
     <h1 class="mb-1">Panel General</h1>
     <p class="text-secondary mb-0">Resumen completo de la plataforma.</p>
 </div>
@@ -60,6 +62,17 @@
                     <a href="{% url 'historial_cambios' %}" class="btn btn-outline-secondary">
                         <i class="bi bi-clock-history me-2"></i> Historial de cambios
                     </a>
+
+                    <a href="{% url 'crear_admin' %}" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i> Crear Nuevo Administrador
+                    </a>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'listado_freelancers' %}active{% endif %}"
+                            href="{% url 'listado_freelancers' %}">
+                            <i class="bi bi-people me-2"></i>Freelancers
+                        </a>
+                    </li>
                 </div>
             </div>
         </div>

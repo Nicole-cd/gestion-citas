@@ -4,7 +4,7 @@
         <small class="text-warning text-uppercase" style="letter-spacing:.1em;font-size:.7rem;">Citas para
                 freelancers</small>
 </div>
-<!-- Parte especifica de clientes -->
+<!-- Parte de clientes -->
 
 {% if request.session.rol == 'cliente' %}
 <small class="text-secondary text-uppercase d-block mb-2" style="font-size:.68rem;letter-spacing:.1em;">Cliente</small>
@@ -30,7 +30,7 @@
 </ul>
 {% endif %}
 
-<!-- Parte especifica de freelancer-->
+<!-- Parte de freelancer-->
 
 {% if request.session.rol == 'freelancer' %}
 <small class="text-secondary text-uppercase d-block mb-2"
@@ -58,7 +58,7 @@
 {% endif %}
 
 
-<!-- Parte especifica de administrador-->
+<!-- Parte de administrador-->
 {% if request.session.rol == 'administrador' %}
 <small class="text-secondary text-uppercase d-block mb-2"
         style="font-size:.68rem;letter-spacing:.1em;">Administración</small>
@@ -81,11 +81,23 @@
                         <i class="bi bi-arrow-repeat me-2"></i>Historial de cambios
                 </a>
         </li>
-        
+        <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'crear_admin' %}active{% endif %}"
+                        href="{% url 'crear_admin' %}">
+                        <i class="bi bi-person-plus me-2"></i>Agregar Admin
+                </a>
+        </li>
+
+        <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'listado_freelancers' %}active{% endif %}"
+                        href="{% url 'listado_freelancers' %}">
+                        <i class="bi bi-people me-2"></i>Freelancers
+                </a>
+        </li>
 </ul>
 {% endif %}
 
 <div class="mt-auto pt-3 border-top border-secondary small text-secondary">
         {{ request.session.nombre|default:"Usuario" }}<br>
-        <a href="{% url 'logout' %}" class="text-white">Cerrar sesión →</a>
+        <a href="{% url 'logout' %}" class="text-white">Cerrar sesión </a>
 </div>

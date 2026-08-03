@@ -23,8 +23,7 @@ urlpatterns = [
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-panel/reportes/', views.reportes_view, name='reportes'),
     path('admin-panel/historial/', views.historial_cambios_view, name='historial_cambios'),
-
-
-
+    path('admin-panel/crear-admin/', views.crear_admin, name='crear_admin'),
+    path('admin-panel/listado-freelancers/', views.listado_freelancers_view, name='listado_freelancers'),
 
 ]
