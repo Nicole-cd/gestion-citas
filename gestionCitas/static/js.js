@@ -48,17 +48,6 @@ document.getElementById('formReserva').addEventListener('submit', function (e) {
     }
 });
 
-function segunDisponibilidad() {
-    var rol = document.getElementById('id_rol').value;
-    var bloque = document.getElementById('bloque-disponibilidad');
-    if (rol === 'freelancer') {
-        bloque.style.display = 'block';
-    } else {
-        bloque.style.display = 'none';
-    }
-}
-
-
 document.addEventListener('DOMContentLoaded', function () {
     toggleDisponibilidad();
 });

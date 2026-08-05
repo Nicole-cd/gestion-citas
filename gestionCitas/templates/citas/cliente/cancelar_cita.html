@@ -25,10 +25,6 @@
         
         <form method="post">
             {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label">Motivo de cancelación</label>
-                <textarea name="motivo" class="form-control" rows="3" placeholder="Opcional: ¿Por qué cancelas la cita?"></textarea>
-            </div>
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-danger">
                     <i class="bi bi-check-circle me-1"></i> Confirmar cancelación

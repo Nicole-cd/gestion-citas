@@ -282,7 +282,6 @@ def atender_cita(request, pk):
         cita.estado = 'atendida'
         cita.observaciones = request.POST.get('observaciones', '')
         cita.save()
-
         messages.success(request, "Servicio finalizado exitosamente.")
         return redirect('freelancer_dashboard')
 
@@ -355,7 +354,6 @@ def admin_dashboard(request):
     total_servicios = Servicio.objects.count()
     citas_hoy = Reserva.objects.filter(fecha=date.today()).count()
     citas_pendientes = Reserva.objects.filter(estado='programada').count()
-
     return render(request, 'citas/admin/dashboard.html', {
         'total_clientes': total_clientes,
         'total_freelancers': total_freelancers,
@@ -369,14 +367,11 @@ def reportes_view(request):
     tipo = request.GET.get('tipo', 'citas')
     desde = request.GET.get('desde')
     hasta = request.GET.get('hasta')
-
     reservas = Reserva.objects.select_related('id_cliente', 'id_freelancer', 'id_servicio')
-
     if desde:
         reservas = reservas.filter(fecha__gte=desde)
     if hasta:
         reservas = reservas.filter(fecha__lte=hasta)
-
     total_citas = reservas.count()
     total_ingresos = reservas.filter(estado='atendida').aggregate(
         total=Sum('id_servicio__precio_base')
@@ -393,9 +388,7 @@ def reportes_view(request):
 
 @requiere_rol('administrador')
 def historial_cambios_view(request):
-    """Vista para ver el historial de cambios"""
     historial = HistorialCambio.objects.select_related('administrador').order_by('-fecha_hora')
-    
     desde = request.GET.get('desde', '')
     hasta = request.GET.get('hasta', '')
     accion = request.GET.get('accion', '')
@@ -405,22 +398,18 @@ def historial_cambios_view(request):
             historial = historial.filter(fecha_hora__date__gte=desde)
         except:
             pass
-    
     if hasta:
         try:
             historial = historial.filter(fecha_hora__date__lte=hasta)
         except:
             pass
-    
+
     if accion:
         historial = historial.filter(accion__icontains=accion)
-
     total_cambios = historial.count()
-    
     paginator = Paginator(historial, 20)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
-    
     context = {
         'historial': page_obj,
         'total_cambios': total_cambios,
@@ -428,7 +417,6 @@ def historial_cambios_view(request):
         'hasta': hasta,
         'accion': accion,
     }
-    
     return render(request, 'citas/admin/historial_cambios.html', context)
 
 @requiere_rol('administrador')
@@ -452,54 +440,42 @@ def crear_admin(request):
             return render(request, 'citas/admin/crear_admin.html', {
                 'administradores': administradores
             })
-        
         if Administrador.objects.filter(correo=correo).exists():
             messages.error(request, f"El correo {correo} ya está registrado como administrador.")
             return render(request, 'citas/admin/crear_admin.html', {
                 'administradores': administradores
             })
-        
         from .models import Cliente, Freelancer
         if Cliente.objects.filter(correo_cliente=correo).exists():
             messages.error(request, f"El correo {correo} ya está registrado como cliente.")
             return render(request, 'citas/admin/crear_admin.html', {
                 'administradores': administradores
             })
-        
         if Freelancer.objects.filter(correo=correo).exists():
             messages.error(request, f"El correo {correo} ya está registrado como freelancer.")
             return render(request, 'citas/admin/crear_admin.html', {
                 'administradores': administradores
             })
         
-
         from django.contrib.auth.hashers import make_password
         Administrador.objects.create(
             nombre=nombre,
             correo=correo,
             contrasena=make_password(password)
-
         )
-        
         messages.success(request, f"Administrador {nombre} creado exitosamente.")
         return redirect('admin_dashboard')
-    
     return render(request, 'citas/admin/crear_admin.html', {
         'administradores': administradores
     })
 
 @requiere_rol('administrador')
 def listado_freelancers_view(request):
-
-
     freelancers = Freelancer.objects.annotate(
         servicios_count=Count('servicios')
     ).order_by('-fecha_registro')
     
-    
     total_freelancers = freelancers.count()
-    freelancers_activos = freelancers.filter(activo=True).count()
-    freelancers_inactivos = freelancers.filter(activo=False).count()
     
     from django.core.paginator import Paginator
     paginator = Paginator(freelancers, 10)
@@ -509,7 +485,5 @@ def listado_freelancers_view(request):
     return render(request, 'citas/admin/listado_freelancers.html', {
         'freelancers': page_obj,
         'total_freelancers': total_freelancers,
-        'freelancers_activos': freelancers_activos,
-        'freelancers_inactivos': freelancers_inactivos,
-        
+
     })

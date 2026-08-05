@@ -22,11 +22,6 @@
 
         <form method="post">
             {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label">Observaciones del servicio</label>
-                <textarea name="observaciones" class="form-control" rows="4"
-                    placeholder="Notas sobre el servicio realizado..."></textarea>
-            </div>
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-success">
                     <i class="bi bi-check-circle me-1"></i> Marcar como atendida
