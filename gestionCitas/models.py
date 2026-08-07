@@ -83,13 +83,6 @@ class Reserva(models.Model):
     observaciones = models.TextField(blank=True, null=True)
     fecha_reserva = models.DateTimeField(auto_now_add=True)
 
-    calendar_event_url = models.URLField(
-        max_length=500,
-        blank=True,
-        null=True,
-        help_text="Enlace al evento en Google Calendar"
-    )
-
     def __str__(self):
         return f"Reserva {self.id_reserva} - {self.fecha}"
 

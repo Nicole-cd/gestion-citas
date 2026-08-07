@@ -184,16 +184,21 @@ def reservar_cita(request):
             mensaje = f"""
             Hola {cliente.nombre},
             
-            Tu cita ha sido confirmada exitosamente.
+            Te recordamos que tienes una cita programada en nuestra plataforma.
             
             Detalles:
             - Servicio: {servicio.nombre}
-            - Profesional: {freelancer.nombre}
+            - Proveedor: {freelancer.nombre}
             - Fecha: {fecha_str}
             - Hora: {hora_str}
             - Modalidad: {reserva.get_modalidad_display()}
             
-            ¡Gracias por usar nuestro servicio!
+            Si necesitas reprogramar o cancelar esta cita, recuerda hacerlo con 
+            anticipación desde tu panel de usuario siguiendo las políticas del sistema.
+
+            Atentamente,
+            Gestión de Citas para Freelancers
+
             """
 
             send_mail(
